@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List</title>
+    <style>
+         body {
+            font-family: sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+         }
+         .wrapper {
+            display: flex;
+         }
+         .menu {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: -240px;
+            width: 200px;
+            background-color: grey;
+            padding: 20px;
+            border-radius: 0 5px 5px 0;
+         }
+         .menu a {
+            margin-bottom: 40px;
+            padding: 8px 16px;
+            color: #007bff;
+            text-decoration: none;
+            display: block;
+         }
+         .menu a:hover{
+            background-color: #007bff;
+            color: #fff;
+         }
+         .notes-drop {
+            display: none;
+            opacity: 0.1;
+            position: absolute;
+            top: 36%;
+            border-radius: 6px;
+            width: 240px;
+            height: 200px;
+            background-color: grey;
+         }
+         .container {
+            max-width: 400px;
+            margin: 30px auto;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+         }
+         h1 {
+            text-align: center;
+         }
+         .task-input {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+         }
+         input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+         }
+         button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 3px;
+            cursor: pointer;
+         }
+         
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+
+
+li:last-child {
+  border-bottom: none;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+    <div class="menu">
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+        <a href="#" class="notes">Notes</a>
+    </div>
+    <div class="notes-drop">
+        hh
+    </div>
+    </div>
+    <div class="container">
+        <button class="openMenu" onclick="menuOpen()">Open Menu</button>
+        <h1>To Do List</h1>
+        <div class="task-input">
+            <input type="text" id="task" placeholder="Enter a new task">
+            <button onclick="addTask()">Add</button>
+        </div>
+        <ul id="task-list">
+            <!-- Task items will be dynamically added here -->
+        </ul>
+        <div class="count">Tasks to do: &nbsp;<span class="number">0</span></div>
+    </div>
+    <script>
+        const taskInput = document.getElementById("task");
+        const taskList = document.getElementById("task-list");
+        const numberCount = document.querySelector(".number");
+        const menu = document.querySelector(".menu");
+        const notesBtn = document.querySelector(".notes");
+        const notesDrop = document.querySelector(".notes-drop");
+        let toDoCount = 0;
+        leftCount = -240;
+        let animationInProgress = false;
+        let notesActive = false;
+
+
+        function addTask() {
+            const newTask = taskInput.value.trim();
+
+
+            if (newTask !== "") {
+                toDoCount += 1;
+                numberCount.textContent = toDoCount;
+                const newTaskItem = document.createElement("li");
+                newTaskItem.textContent = newTask;
+                taskList.appendChild(newTaskItem);
+                taskInput.value = "";
+                newTaskItem.addEventListener("click", taskClick);
+            }
+        }
+
+
+        function taskClick(event) {
+            const clickedTask = event.target;
+            if (clickedTask.style.textDecoration !== "line-through") {
+            toDoCount -= 1;
+            numberCount.textContent = toDoCount;
+            clickedTask.style.textDecoration = "line-through";
+            }
+            else {
+                clickedTask.style.textDecoration = "none";
+                toDoCount += 1;
+                numberCount.textContent = toDoCount;
+            }
+        }
+        function menuOpen() {
+        if (!animationInProgress) {
+            animationInProgress = true;
+            if (leftCount < 0) {
+                const interval = setInterval(function() {
+                    leftCount += 10;
+                    menu.style.left = leftCount + "px";
+                    if (leftCount >= 0) {
+                        clearInterval(interval);
+                        animationInProgress = false;
+                    }
+                }, 10);
+            } else {
+                const interval = setInterval(function() {
+                    leftCount -= 10;
+                    menu.style.left = leftCount + "px";
+                    if (leftCount <= -240) {
+                        clearInterval(interval);
+                        animationInProgress = false;
+                    }
+                }, 10);
+            }
+        }
+    }
+    let opacityCount = 0;
+    notesBtn.addEventListener('mouseenter', function() {
+    if (!notesActive) {
+        notesActive = true;
+
+
+        // Show notesDrop and animate the opacity
+        notesDrop.style.display = 'flex';
+        const interval = setInterval(function() {
+            opacityCount += 0.1;
+            notesDrop.style.opacity = opacityCount;
+            if (opacityCount >= 1) {
+                clearInterval(interval);
+                notesActive = false;
+            }
+        }, 10);
+    }
+});
+
+
+notesBtn.addEventListener('mouseleave', function() {
+    if (!notesActive) {
+        notesActive = true;
+
+
+        // Animate the opacity and hide notesDrop when opacity reaches 0
+        const interval = setInterval(function() {
+            opacityCount -= 0.1;
+            notesDrop.style.opacity = opacityCount;
+            if (opacityCount <= 0) {
+                clearInterval(interval);
+                notesActive = false;
+                notesDrop.style.display = 'none';
+            }
+        }, 10);
+    }
+});
+
+
+    </script>
+</body>
+</html>
